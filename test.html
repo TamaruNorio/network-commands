@@ -822,6 +822,10 @@
             // Telnet
             explanationText =
               '画面が真っ暗になるのはTCP接続が確立したことを意味しますが、アプリケーション（Webサーバーなど）が正常に応答するかどうかまでは保証しません。HTTPなどはリクエストを送らないと反応がないためです。';
+          } else if (q.id === 6) {
+            // ping vs Web access
+            explanationText =
+            'pingが成功するのはICMP（ネットワーク層/Layer 3）で通信できているということです。しかしWebブラウザはHTTP/HTTPS（アプリケーション層/Layer 7）を使うため、Webサーバーアプリが停止していたり、ポート80/443がファイアウォールで閉じている場合はアクセスできません。このように、pingとアプリケーションは別の層で動作しています。';
           } else {
             // Generic explanation
             explanationText = `正解は「${q.options[q.correct]}」です。`;
