@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="light" style=""><head>
+    <meta charset="UTF-8">
+    <title>Windows 11 ネットワークコマンド基礎学習資料</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --font-family: 'Noto Serif JP', 'Times New Roman', serif;
+        --code-font-family: 'Source Code Pro', 'Consolas', monospace;
+        --primary: #0056b3;
+        --background-color: #ffffff;
+        --color: #000000;
+        --h1-color: #000000;
+        --h2-color: #2c3e50;
+        --h3-color: #34495e;
+        --spacing-company: 3rem;
+      }
+
+      body {
+        font-family: var(--font-family);
+        color: var(--color);
+        background-color: var(--background-color);
+        max-width: 880px; /* A4 width approx */
+        margin: 0 auto;
+        padding: 48px 80px;
+        line-height: 1.6;
+        box-sizing: border-box;
+        font-size: 11pt;
+      }
+
+      h1 {
+        font-size: 24pt;
+        border-bottom: 2px solid #000;
+        padding-bottom: 10px;
+        margin-top: 0;
+        margin-bottom: 30px;
+      }
+
+      h2 {
+        font-size: 16pt;
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 5px;
+        margin-top: 30px;
+        margin-bottom: 15px;
+        color: var(--h2-color);
+      }
+
+      h3 {
+        font-size: 13pt;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        font-weight: bold;
+        color: var(--h3-color);
+      }
+
+      h4 {
+        font-size: 11pt;
+        margin-top: 15px;
+        margin-bottom: 5px;
+        font-weight: bold;
+        text-decoration: underline;
+      }
+
+      p {
+        margin-bottom: 1em;
+        text-align: justify;
+      }
+
+      ul,
+      ol {
+        margin-bottom: 1em;
+      }
+
+      li {
+        margin-bottom: 0.5em;
+      }
+
+      /* Table styling for document look */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        font-size: 10.5pt;
+      }
+
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 8px;
+        text-align: left;
+      }
+
+      th {
+        background-color: #f0f0f0;
+        font-weight: bold;
+      }
+
+      /* Code blocks styling */
+      pre {
+        background-color: #f5f5f5;
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin-bottom: 15px;
+        font-family: var(--code-font-family);
+        font-size: 9.5pt;
+        overflow-x: hidden; /* Avoid scrollbars */
+        white-space: pre-wrap; /* Wrap text */
+      }
+
+      code {
+        font-family: var(--code-font-family);
+        background-color: #f5f5f5;
+        padding: 2px 4px;
+        font-size: 0.9em;
+      }
+
+      .cmd-output {
+        background-color: #000;
+        color: #fff;
+        border: none;
+        border-left: 4px solid #888;
+      }
+
+      .note {
+        border: 1px solid #000;
+        padding: 10px;
+        margin: 15px 0;
+        background-color: #fff;
+      }
+
+      .note-title {
+        font-weight: bold;
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      .toc {
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        padding: 20px;
+        margin-bottom: 40px;
+      }
+
+      .toc h2 {
+        margin-top: 0;
+        border-bottom: none;
+        font-size: 14pt;
+      }
+
+      .toc ul {
+        list-style-type: none;
+        padding-left: 0;
+      }
+
+      .toc > ul > li {
+        margin-bottom: 8px;
+        font-weight: bold;
+      }
+
+      .toc ul ul {
+        padding-left: 20px;
+        margin-top: 5px;
+      }
+
+      .toc ul ul li {
+        font-weight: normal;
+        margin-bottom: 3px;
+      }
+
+      .toc a {
+        text-decoration: none;
+        color: #000;
+        border-bottom: 1px dotted #999;
+      }
+
+      .header-info {
+        text-align: right;
+        font-size: 10pt;
+        margin-bottom: 40px;
+        color: #666;
+      }
+
+      figure {
+        margin: 20px 0;
+        text-align: center;
+        border: 1px solid #ddd;
+        padding: 5px;
+      }
+
+      figure img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        display: block;
+        margin: 0 auto;
+      }
+
+      figcaption {
+        font-size: 9pt;
+        color: #666;
+        margin-top: 5px;
+        font-style: italic;
+      }
+
+      /* Utility classes */
+      .text-center {
+        text-align: center;
+      }
+      .font-bold {
+        font-weight: bold;
+      }
+
+      .scenario-box {
+        border: 1px solid #333;
+        padding: 15px;
+        background-color: #fdfdfd;
+        margin-bottom: 20px;
+      }
+
+      /* Learning timer and progress tracking */
+      .chapter-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding: 10px 15px;
+        background-color: #f5f9fc;
+        border-left: 4px solid #0056b3;
+      }
+
+      .timer-display-small {
+        font-size: 0.95rem;
+        color: #0056b3;
+        font-weight: bold;
+      }
+
+      .timer-warning {
+        color: #e74c3c !important;
+      }
+
+      .mastery-checkbox {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 10px;
+        padding: 10px;
+        background-color: #f0f8ff;
+        border: 1px solid #0056b3;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .mastery-checkbox input[type='checkbox'] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+      }
+
+      .mastery-checkbox.completed {
+        background-color: #d4edda;
+        border-color: #28a745;
+      }
+
+      .progress-summary {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #fff;
+        border: 2px solid #0056b3;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        min-width: 200px;
+        z-index: 1000;
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 20px;
+        background-color: #e9ecef;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-top: 10px;
+      }
+
+      .progress-bar-fill {
+        height: 100%;
+        background-color: #28a745;
+        transition: width 0.3s ease;
+      }
+    </style>
+  </head>
+  <body style="">
+    <div class="header-info">
+      <p>作成日: 2026年2月4日</p>
+      <p>対象: 開発部メンバー</p>
+    </div>
+
+    <h1>ネットワークコマンド基礎学習資料<span style="font-size: 14pt"> (Windows 11版)</span></h1>
+
+    <div class="toc">
+      <h2>目次</h2>
+      <ul>
+        <li>
+          <a href="#section1">1. 基礎知識編</a>
+          <ul>
+            <li>MS-DOSとコマンドライン環境の歴史</li>
+            <li>GUIとCUIの役割分担</li>
+            <li>コマンドプロンプトとPowerShell</li>
+            <li>Windows 11での管理者権限</li>
+          </ul>
+        </li>
+        <li>
+          <a href="#section2">2. ネットワーク基礎概念</a>
+          <ul>
+            <li>プロトコルスタックの理解</li>
+            <li>IPアドレッシングの基礎</li>
+            <li>ポート番号の理解と代表的なポート一覧</li>
+          </ul>
+        </li>
+        <li>
+          <a href="#section3">3. 基本コマンド詳解</a>
+          <ul>
+            <li>3.1 ping - 疎通確認の基本</li>
+            <li>3.2 ipconfig - ネットワーク設定の確認</li>
+            <li>3.3 tracert - 経路情報の追跡</li>
+            <li>3.4 arp - 物理アドレスの解決</li>
+          </ul>
+        </li>
+        <li>
+          <a href="#section4">4. 必須追加コマンド</a>
+          <ul>
+            <li>4.1 netstat, 4.2 nslookup, 4.3 route 他</li>
+          </ul>
+        </li>
+        <li><a href="#section5">5. トラブルシューティングフロー</a></li>
+        <li><a href="#section6">6. 演習問題と実践シナリオ</a></li>
+        <li><a href="#section7">7. 理解度確認テスト</a></li>
+        <li><a href="#section7">8. 参考資料とさらなる学習</a></li>
+      </ul>
+    </div>
+
+    <section id="section1">
+      <div class="chapter-header">
+        <h2 style="margin: 0; border: none">1. 基礎知識編</h2>
+        <div class="timer-display-small" id="timer-section1">⏱️ 10:00</div>
+      </div>
+
+      <h3>1.1 MS-DOSとは（歴史的背景と現代における位置づけ）</h3>
+      <p>
+        MS-DOS (Microsoft Disk Operating System) は、1981年にIBM
+        PC向けに開発されたOSであり、現在のWindowsの原点です。かつてはOSそのものでしたが、現在のWindows（NT系カーネル）においては、互換性のために残されているサブシステム的な位置づけです。私たちが普段「コマンドプロンプト」と呼んでいる
+        <code>cmd.exe</code> は、MS-DOS互換の操作体系を引き継いだWindows標準シェルです。
+      </p>
+
+      <h3>1.2 GUI vs CUI の違いと使い分け</h3>
+      <p>
+        エンジニアとしてシステムを扱う際、GUI（Graphical User Interface）とCUI（Character User
+        Interface）を適切に使い分ける能力が求められます。
+      </p>
+      <table>
+        <tbody><tr>
+          <th>比較項目</th>
+          <th>GUI (Windowsの設定画面など)</th>
+          <th>CUI (コマンドプロンプト等)</th>
+        </tr>
+        <tr>
+          <td><strong>特徴</strong></td>
+          <td>視覚的・直感的。マウス操作主体。</td>
+          <td>文字ベース。キーボード操作主体。</td>
+        </tr>
+        <tr>
+          <td><strong>メリット</strong></td>
+          <td>学習コストが低い。全体像を把握しやすい。</td>
+          <td>処理が高速。自動化（バッチ処理）が容易。詳細な情報が得られる。</td>
+        </tr>
+        <tr>
+          <td><strong>用途</strong></td>
+          <td>日常業務、Officeソフト、簡単な設定変更</td>
+          <td>障害調査、大量の設定変更、ログ解析、スクリプト作成</td>
+        </tr>
+      </tbody></table>
+
+      <h3>1.3 コマンドプロンプト（CMD）とPowerShellの違い</h3>
+      <p>Windows 11には主に2つのCUI環境があります。</p>
+      <ul>
+        <li>
+          <strong>コマンドプロンプト (cmd.exe):</strong>
+          従来のMS-DOS互換環境。シンプルで、基本的なネットワークコマンド（ping,
+          ipconfig等）を実行するのに適しています。レガシーなバッチファイルの実行にも使われます。
+        </li>
+        <li>
+          <strong>PowerShell:</strong> .NET
+          Frameworkを基盤とした強力なシェル環境。オブジェクト指向であり、複雑なシステム管理や自動化に適しています。CMDのコマンドもほとんど実行可能です。
+        </li>
+      </ul>
+      <p>
+        本資料では、基本となる「コマンドプロンプト」または「Windows Terminal（デフォルト設定）」での操作を前提とします。
+      </p>
+
+      <h3>1.4 管理者権限での実行方法（Windows 11での手順）</h3>
+      <p>
+        一部のコマンド（<code>ipconfig /renew</code> や
+        <code>route add</code> など）は、システムの設定を変更するため「管理者権限」が必要です。
+      </p>
+      <div class="note">
+        <span class="note-title">Windows 11での起動手順:</span>
+        <ol>
+          <li>スタートボタンを右クリック（または <code>Win + X</code> キー）。</li>
+          <li>メニューから<strong>「ターミナル (管理者)」</strong>を選択します。</li>
+          <li>ユーザーアカウント制御 (UAC) の画面が出たら「はい」をクリックします。</li>
+        </ol>
+        <p>
+          ※従来のコマンドプロンプトを使用したい場合は、スタートメニューで「cmd」と入力し、「管理者として実行」を選択します。
+        </p>
+      </div>
+
+      <div class="mastery-checkbox" onclick="toggleMastery('section1')">
+        <input type="checkbox" id="check-section1">
+        <label for="check-section1" style="cursor: pointer; user-select: none">✓ この章を習得しました</label>
+      </div>
+    </section>
+
+    <section id="section2">
+      <div class="chapter-header">
+        <h2 style="margin: 0; border: none">2. ネットワーク基礎概念</h2>
+        <div class="timer-display-small" id="timer-section2">⏱️ 8:00</div>
+      </div>
+      <p>
+        コマンドを理解するためには、背景にある理論の理解が不可欠です。特にポート番号の概念は、netstatやtelnetコマンドを使いこなす上で極めて重要です。各層の役割を論理的に整理します。
+      </p>
+
+      <h3>2.1 TCP/IPプロトコルスタックとOSI参照モデル</h3>
+      <p>ネットワーク通信は、階層構造（レイヤー）で管理されています。</p>
+      <table>
+        <thead>
+          <tr>
+            <th>TCP/IP (4層モデル)</th>
+            <th>OSI参照モデル (7層)</th>
+            <th>主なプロトコル</th>
+            <th>関連コマンド</th>
+            <th>データの単位</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td rowspan="3">アプリケーション層</td>
+            <td>アプリケーション層</td>
+            <td rowspan="3">HTTP, DNS, SMTP</td>
+            <td rowspan="3">nslookup, telnet, curl</td>
+            <td rowspan="3">データ / メッセージ</td>
+          </tr>
+          <tr>
+            <td>プレゼンテーション層</td>
+          </tr>
+          <tr>
+            <td>セッション層</td>
+          </tr>
+          <tr>
+            <td>トランスポート層</td>
+            <td>トランスポート層</td>
+            <td>TCP, UDP</td>
+            <td>netstat</td>
+            <td>セグメント / データグラム</td>
+          </tr>
+          <tr>
+            <td>インターネット層</td>
+            <td>ネットワーク層</td>
+            <td>IP, ICMP</td>
+            <td>ping, tracert, ipconfig, route</td>
+            <td>パケット</td>
+          </tr>
+          <tr>
+            <td rowspan="2">ネットワークインターフェース層</td>
+            <td>データリンク層</td>
+            <td>Ethernet, Wi-Fi, ARP</td>
+            <td>ipconfig (MACアドレス), arp</td>
+            <td>フレーム</td>
+          </tr>
+          <tr>
+            <td>物理層</td>
+            <td>ケーブル, 電波</td>
+            <td>-</td>
+            <td>ビット</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>2.2 IPアドレス周辺の重要概念</h3>
+      <ul>
+        <li><strong>IPアドレス:</strong> ネットワーク上の住所。IPv4（例: 192.168.1.10）とIPv6があります。</li>
+        <li>
+          <strong>サブネットマスク:</strong>
+          IPアドレスのうち、「ネットワーク部」と「ホスト部」の境界を示すビット列です（例: 255.255.255.0）。
+        </li>
+        <li>
+          <strong>デフォルトゲートウェイ:</strong>
+          異なるネットワーク（インターネットなど）へ通信する際の「出口」となるルーターのアドレスです。
+        </li>
+        <li>
+          <strong>DNS (Domain Name System):</strong>
+          人間が読みやすいドメイン名（google.com）をIPアドレスに変換するシステムです。
+        </li>
+        <li>
+          <strong>DHCP (Dynamic Host Configuration Protocol):</strong>
+          IPアドレスなどの設定を自動的に配布する仕組みです。
+        </li>
+      </ul>
+
+      <h3>2.3 ポート番号の理解</h3>
+      <p>
+        <strong>ポート番号とは:</strong>
+        IPアドレスが「建物の住所」だとすれば、ポート番号は「部屋番号」にあたります。1台のコンピュータ上で複数のネットワークサービス（Webサーバー、メールサーバー、FTPサーバーなど）を同時に動かすため、どのアプリケーションとの通信なのかを識別する番号です。
+      </p>
+      <p>ポート番号は0～65535までの範囲があり、以下のように分類されます：</p>
+      <ul>
+        <li>
+          <strong>ウェルノウンポート（0～1023）:</strong> 標準的なサービス用に予約された番号。サーバー側で使用されます。
+        </li>
+        <li>
+          <strong>登録済みポート（1024～49151）:</strong> 特定のアプリケーションやサービスが登録して使用する番号。
+        </li>
+        <li><strong>動的/プライベートポート（49152～65535）:</strong> クライアント側が一時的に使用する番号。</li>
+      </ul>
+
+      <h4>代表的なポート番号一覧</h4>
+      <table>
+        <thead>
+          <tr>
+            <th>ポート番号</th>
+            <th>プロトコル</th>
+            <th>サービス名</th>
+            <th>用途</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>20/21</strong></td>
+            <td>TCP</td>
+            <td>FTP</td>
+            <td>ファイル転送プロトコル（20:データ転送、21:制御）</td>
+          </tr>
+          <tr>
+            <td><strong>22</strong></td>
+            <td>TCP</td>
+            <td>SSH</td>
+            <td>セキュアシェル（暗号化されたリモート接続）</td>
+          </tr>
+          <tr>
+            <td><strong>23</strong></td>
+            <td>TCP</td>
+            <td>Telnet</td>
+            <td>リモートログイン（平文通信のため非推奨）</td>
+          </tr>
+          <tr>
+            <td><strong>25</strong></td>
+            <td>TCP</td>
+            <td>SMTP</td>
+            <td>メール送信プロトコル</td>
+          </tr>
+          <tr>
+            <td><strong>53</strong></td>
+            <td>TCP/UDP</td>
+            <td>DNS</td>
+            <td>ドメイン名解決サービス</td>
+          </tr>
+          <tr>
+            <td><strong>67/68</strong></td>
+            <td>UDP</td>
+            <td>DHCP</td>
+            <td>IPアドレス自動割り当て（67:サーバー、68:クライアント）</td>
+          </tr>
+          <tr>
+            <td><strong>80</strong></td>
+            <td>TCP</td>
+            <td>HTTP</td>
+            <td>Webサイト閲覧（平文通信）</td>
+          </tr>
+          <tr>
+            <td><strong>110</strong></td>
+            <td>TCP</td>
+            <td>POP3</td>
+            <td>メール受信プロトコル</td>
+          </tr>
+          <tr>
+            <td><strong>143</strong></td>
+            <td>TCP</td>
+            <td>IMAP</td>
+            <td>メール受信プロトコル（サーバー上でメール管理）</td>
+          </tr>
+          <tr>
+            <td><strong>443</strong></td>
+            <td>TCP</td>
+            <td>HTTPS</td>
+            <td>暗号化されたWebサイト閲覧（SSL/TLS）</td>
+          </tr>
+          <tr>
+            <td><strong>445</strong></td>
+            <td>TCP</td>
+            <td>SMB</td>
+            <td>Windowsファイル共有</td>
+          </tr>
+          <tr>
+            <td><strong>3306</strong></td>
+            <td>TCP</td>
+            <td>MySQL</td>
+            <td>MySQLデータベース接続</td>
+          </tr>
+          <tr>
+            <td><strong>3389</strong></td>
+            <td>TCP</td>
+            <td>RDP</td>
+            <td>Windowsリモートデスクトップ</td>
+          </tr>
+          <tr>
+            <td><strong>5432</strong></td>
+            <td>TCP</td>
+            <td>PostgreSQL</td>
+            <td>PostgreSQLデータベース接続</td>
+          </tr>
+          <tr>
+            <td><strong>8080</strong></td>
+            <td>TCP</td>
+            <td>HTTP-ALT</td>
+            <td>代替Webサーバーポート（開発・テスト環境でよく使用）</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="note">
+        <span class="note-title">実務での活用例：</span>
+        <p>
+          <code>netstat -ano</code> で接続状態を見る際、「Local Address」や「Foreign
+          Address」の末尾にコロン（:）で表示されているのがポート番号です。
+          例えば「192.168.1.10:443」は、192.168.1.10というIPアドレスの443番ポート（HTTPS）を意味します。
+        </p>
+        <p>
+          <strong>例:</strong> <code>telnet 192.168.1.50 80</code> とコマンドを打つことで、
+          192.168.1.50の80番ポート（HTTP）が開いているか（Webサーバーが稼働しているか）を確認できます。
+        </p>
+      </div>
+
+      <div class="mastery-checkbox" onclick="toggleMastery('section2')">
+        <input type="checkbox" id="check-section2">
+        <label for="check-section2" style="cursor: pointer; user-select: none">✓ この章を習得しました</label>
+      </div>
+    </section>
+
+    <section id="section3">
+      <div class="chapter-header">
+        <h2 style="margin: 0; border: none">3. 基本コマンド詳解（Windows 11対応）</h2>
+        <div class="timer-display-small" id="timer-section3">⏱️ 10:00</div>
+      </div>
+
+      <h3 id="ping">3.1 ping (Packet Internet Groper)</h3>
+      <p>
+        <strong>目的:</strong> 通信相手（ホスト）までの到達性を確認する最も基本的なコマンドです。ICMP (Internet Control
+        Message Protocol) の「エコー要求」と「エコー応答」を使用します。
+      </p>
+
+      <figure>
+        <img src="https://sspark.genspark.ai/cfimages?u1=PpMCbUj2oQ3cPfrbpyZXRhbJABTOYKci9isdGb2iSEWSAL4T3h2T1sDBpp2W29EVjD7NVKySc7CVmjKS%2F4%2BSDyir679y%2Fz%2BlzYuOZCaDa19VvTEas%2BKkcurAJhB1lpgz4SyAcDmkKVmQzjDeVP%2F84DWthmA9bo8UV4d5i%2FZaIEGBiCekQcgixlkElhg%2BX18ocfbIIahZMryTk2l3AtMFshJ27XdtZOraOhJQLG4VNPC6BS8WQFH%2F6eyrunZa&amp;u2=HqYfuJzXcj4rHcId&amp;width=2560" alt="Pingコマンド実行例" data-height-listener-added="true">
+        <figcaption>図1: Windows環境でのpingコマンド実行例</figcaption>
+      </figure>
+
+      <h4>基本的な構文</h4>
+      <pre><code>ping [オプション] ターゲット名(IPまたはドメイン)</code></pre>
+
+      <h4>主要オプション</h4>
+      <table>
+        <tbody><tr>
+          <th>オプション</th>
+          <th>説明</th>
+        </tr>
+        <tr>
+          <td><code>-t</code></td>
+          <td>中断するまでpingを送り続けます（Ctrl+Cで停止）。断続的なネットワーク障害の監視に有効です。</td>
+        </tr>
+        <tr>
+          <td><code>-n 回数</code></td>
+          <td>送信するエコー要求の回数を指定します（デフォルトは4回）。</td>
+        </tr>
+        <tr>
+          <td><code>-l サイズ</code></td>
+          <td>送信バッファサイズ（バイト数）を指定します。MTUサイズの確認などに使用します。</td>
+        </tr>
+        <tr>
+          <td><code>-a</code></td>
+          <td>IPアドレスからホスト名を解決して表示します。</td>
+        </tr>
+      </tbody></table>
+
+      <h4>出力の見方</h4>
+      <pre class="cmd-output">C:\&gt;ping 8.8.8.8
+
+8.8.8.8 に ping を送信しています 32 バイトのデータ:
+8.8.8.8 からの応答: バイト数 =32 時間 =12ms TTL=116
+8.8.8.8 からの応答: バイト数 =32 時間 =13ms TTL=116
+...
+8.8.8.8 の ping 統計:
+    パケット数: 送信 = 4、受信 = 4、損失 = 0 (0% の損失)、
+ラウンド トリップの概算時間 (ミリ秒):
+    最小 = 12ms、最大 = 13ms、平均 = 12ms</pre>
+      <ul>
+        <li><strong>時間 (time):</strong> 応答にかかった時間（往復）。値が小さいほど高速。</li>
+        <li>
+          <strong>TTL (Time To Live):</strong>
+          生存時間。ルーターを経由するたびに1減り、0になるとパケットは破棄されます。相手のOS推定にも使われます（Windows系は通常128,
+          Linux系は64など）。
+        </li>
+      </ul>
+
+      <h3 id="ipconfig">3.2 ipconfig (IP Configuration)</h3>
+      <p><strong>目的:</strong> 自身のコンピュータのネットワーク設定（IPアドレス、MACアドレス等）を確認します。</p>
+
+      <figure>
+        <img src="https://sspark.genspark.ai/cfimages?u1=4D98pD8AVDTgnQEhVeVWSxC39VcT%2Bs%2FEBQHII%2Bk7erjvSYWBK6FTbil4CI7olyGy5skBuok%2FkRU4v7NyGXD0gG0p62PXh3HalqF5TUZkBWusSmf9ogv9&amp;u2=fi9%2FUebuUwSNnszi&amp;width=2560" alt="ipconfigコマンド実行例" data-height-listener-added="true">
+        <figcaption>図2: ipconfigコマンドの出力例</figcaption>
+      </figure>
+
+      <h4>主要オプション</h4>
+      <table>
+        <tbody><tr>
+          <th>オプション</th>
+          <th>説明</th>
+        </tr>
+        <tr>
+          <td><code>/all</code></td>
+          <td>詳細情報を表示します。MACアドレス（物理アドレス）やDHCP/DNSサーバー情報を確認する際に必須です。</td>
+        </tr>
+        <tr>
+          <td><code>/release</code></td>
+          <td>現在のIPアドレスを解放（破棄）します。</td>
+        </tr>
+        <tr>
+          <td><code>/renew</code></td>
+          <td>DHCPサーバーからIPアドレスを再取得します。接続不良時のリセットによく使われます。</td>
+        </tr>
+        <tr>
+          <td><code>/flushdns</code></td>
+          <td>DNSリゾルバキャッシュをクリアします。WebサイトのIPが変わったのに繋がらない場合などに有効です。</td>
+        </tr>
+      </tbody></table>
+
+      <h3 id="tracert">3.3 tracert (Trace Route)</h3>
+      <p>
+        <strong>目的:</strong>
+        宛先までの通信経路（経由するルーター）を表示します。どこで通信が途切れているか、遅延が発生しているかを特定するのに役立ちます。
+      </p>
+
+      <figure>
+        <img src="https://sspark.genspark.ai/cfimages?u1=cWskhFszwMIvWKl3Gx5Hfs0jkkoJKJrPHE7cUnZxh6gYplbao6AMMdA18CM94oq0blrc%2B8dktrk3IJKjzzU1pz%2FmEN3mcnhU5q0CQzy1qdxW7A8hqdLgTF0jpgso%2FTjy%2Bu5uniRvtNf6ISElppT3yCDrDZtaNfoqKJGdBwat%2BH9p9giRDew8gJFWcN2oA6ZSlx2FesqFMcJFEJV6q2mKKcd8jxDURBaRdZbU3VHqthHkWYGX9KmiYWc%3D&amp;u2=yLOyqttBDLjTVbSH&amp;width=2560" alt="tracertコマンド実行例" data-height-listener-added="true">
+        <figcaption>図3: tracertコマンドによる経路追跡</figcaption>
+      </figure>
+
+      <h4>仕組み</h4>
+      <p>
+        IPヘッダのTTL（生存時間）を1から順に増やしながらパケットを送信し、各ルーターから返ってくる「時間超過(Time
+        Exceeded)」メッセージを利用して経路を特定します。
+      </p>
+
+      <h4>出力の読み方</h4>
+      <pre class="cmd-output">C:\&gt;tracert www.google.com
+
+www.google.com [172.217.25.196] へのルートをトレースしています
+経由するホップ数は最大 30 です:
+
+  1    &lt;1 ms    &lt;1 ms    &lt;1 ms  192.168.1.1  (自宅ルーター)
+  2     5 ms     4 ms     4 ms  10.20.30.1   (ISPのゲートウェイ)
+  3    15 ms    12 ms    14 ms  203.0.113.5  (インターネット上のルーター)
+  ...</pre>
+      <p>
+        行番号は「ホップ数（ルーターの数）」を表します。特定の行で「* * *
+        要求がタイムアウトしました」となる場合、そのルーターがICMP応答を拒否しているか、そこで障害が起きている可能性があります。
+      </p>
+
+      <h3 id="arp">3.4 arp (Address Resolution Protocol)</h3>
+      <p>
+        <strong>目的:</strong>
+        IPアドレスとMACアドレス（物理アドレス）の対応表（ARPテーブル）を表示・操作します。通信相手が同じネットワーク内にいる場合、最終的にはMACアドレスを使って通信するため、ARPが正常に機能している必要があります。
+      </p>
+
+      <h4>主要オプション</h4>
+      <ul>
+        <li><code>arp -a</code>: 現在のARPテーブルを表示します。</li>
+        <li>
+          <code>arp -d</code>:
+          ARPテーブルを削除（クリア）します。キャッシュが古いために通信できない場合に管理者権限で使用します。
+        </li>
+      </ul>
+
+      <div class="mastery-checkbox" onclick="toggleMastery('section3')">
+        <input type="checkbox" id="check-section3">
+        <label for="check-section3" style="cursor: pointer; user-select: none">✓ この章を習得しました</label>
+      </div>
+    </section>
+
+    <section id="section4">
+      <div class="chapter-header">
+        <h2 style="margin: 0; border: none">4. 必須追加コマンド（Windows 11対応）</h2>
+        <div class="timer-display-small" id="timer-section4">⏱️ 10:00</div>
+      </div>
+
+      <h3 id="netstat">4.1 netstat (Network Statistics)</h3>
+      <p>
+        <strong>目的:</strong>
+        コンピュータのアクティブなTCP接続、リスニングしているポート、イーサネット統計情報を表示します。
+      </p>
+
+      <figure>
+        <img src="https://sspark.genspark.ai/cfimages?u1=X6%2FkeYPgywMoS2nYv%2BuozpHl5aZrv2M6CNWilkVqjaLqAPYoMT92HZy%2FKRUogNFK4DB7DuFZN7QoS5ldCDLDSfACJQlNvXcV1nVj0O%2B%2BsnDyrDxb%2Fc2aO8rbYY%2BnYhz3dkAypL0nVUw%2BV7twk4OT2DNdgjl1&amp;u2=LQRqhZB0zvh9VqRy&amp;width=2560" alt="netstatコマンド実行例" data-height-listener-added="true">
+        <figcaption>図4: netstatコマンドでの接続確認</figcaption>
+      </figure>
+
+      <h4>主要オプションと活用例</h4>
+      <table>
+        <tbody><tr>
+          <th>コマンド</th>
+          <th>用途</th>
+        </tr>
+        <tr>
+          <td><code>netstat -an</code></td>
+          <td>すべての接続とリスニングポートを数値形式（DNS解決なし）で表示。最も高速で一般的。</td>
+        </tr>
+        <tr>
+          <td><code>netstat -ano</code></td>
+          <td>
+            PID（プロセスID）を含めて表示。タスクマネージャーと照らし合わせることで、「どのアプリが通信しているか」を特定可能。
+          </td>
+        </tr>
+        <tr>
+          <td><code>netstat -b</code></td>
+          <td>通信を行っている実行ファイル名（exe名）を直接表示（要管理者権限）。</td>
+        </tr>
+      </tbody></table>
+      <h4>状態(State)の意味</h4>
+      <ul>
+        <li><strong>LISTENING:</strong> 接続待ち状態（サーバーとして機能している）。</li>
+        <li><strong>ESTABLISHED:</strong> 通信確立済み。データ送受信中。</li>
+        <li><strong>TIME_WAIT:</strong> 通信終了後の待機状態。</li>
+      </ul>
+
+      <h3 id="nslookup">4.2 nslookup (Name Server Lookup)</h3>
+      <p><strong>目的:</strong> DNSサーバーに対してドメイン名の名前解決を問い合わせます。</p>
+      <h4>使用例</h4>
+      <pre class="cmd-output">C:\&gt;nslookup google.com
+サーバー:  UnKnown
+Address:  192.168.1.1  (使用しているDNSサーバー)
+
+権限のない回答:
+名前:    google.com
+Addresses:  142.250.196.142
+          2404:6800:4004:80c::200e</pre>
+      <p>
+        特定のレコードタイプを調べる場合は、<code>set type=MX</code> などを対話モードで入力するか、<code>nslookup -type=MX google.com</code>
+        のように指定します。
+      </p>
+
+      <h3 id="route">4.3 route</h3>
+      <p>
+        <strong>目的:</strong>
+        WindowsのIPルーティングテーブルを表示または変更します。PCが複数のネットワークアダプタを持つ場合（有線LANとWi-Fi、VPNなど）、どの通信をどのアダプタに流すかを制御します。
+      </p>
+      <ul>
+        <li><code>route print</code>: ルーティングテーブルの表示。</li>
+        <li><code>route add [宛先] mask [マスク] [ゲートウェイ]</code>: 静的ルートの追加。</li>
+      </ul>
+
+      <h3 id="telnet">4.4 telnet</h3>
+      <p>
+        <strong>目的:</strong>
+        特定のIPアドレスの「特定のポート番号」が開いているかを確認します。本来は遠隔操作プロトコルですが、現在はトラブルシューティングの「ポート疎通確認ツール」として使われます。
+      </p>
+      <div class="note">
+        <strong>注意:</strong> Windows
+        11ではデフォルトで無効になっています。「Windowsの機能の有効化または無効化」から「Telnet
+        Client」を有効にする必要があります。
+      </div>
+      <p>
+        <strong>実行例:</strong> <code>telnet 192.168.1.50 80</code> <br>
+        画面が真っ暗になればTCP接続が成立したことを示します（ポートが開いている）。ただし、アプリケーション層のサービスが正常に応答するかは別途確認が必要です。「接続できませんでした」と出ればポートが閉じているかフィルタリングされています。
+      </p>
+      <div class="note">
+        <span class="note-title">補足:</span>
+        <p>
+          より確実なポート疎通確認には、PowerShellの
+          <code>Test-NetConnection</code> コマンドレットの使用を推奨します：<br>
+          <code>Test-NetConnection 192.168.1.50 -Port 80</code>
+        </p>
+      </div>
+
+      <h3 id="pathping">4.5 pathping</h3>
+      <p>
+        <strong>目的:</strong> <code>ping</code> と
+        <code>tracert</code>
+        の機能を合わせたコマンドです。経路上の各ルーターに対して一定時間パケットを送り続け、どこでパケットロスが発生しているかを統計的に分析します。実行には数分かかります。
+      </p>
+
+      <h3 id="netsh">4.6 netsh (Network Shell)</h3>
+      <p><strong>目的:</strong> ネットワーク設定の詳細な表示・変更を行う強力なツールです。</p>
+      <ul>
+        <li><code>netsh interface ip show config</code>: IP設定の詳細表示。</li>
+        <li><code>netsh wlan show profiles</code>: 保存されているWi-Fiプロファイルの表示。</li>
+        <li><code>netsh wlan show wlanreport</code>: 無線LANの診断レポートをHTMLで生成します。</li>
+      </ul>
+
+      <div class="mastery-checkbox" onclick="toggleMastery('section4')">
+        <input type="checkbox" id="check-section4">
+        <label for="check-section4" style="cursor: pointer; user-select: none">✓ この章を習得しました</label>
+      </div>
+    </section>
+
+    <section id="section5">
+      <div class="chapter-header">
+        <h2 style="margin: 0; border: none">5. トラブルシューティングフロー</h2>
+        <div class="timer-display-small" id="timer-section5">⏱️ 5:00</div>
+      </div>
+      <p>
+        ネットワークにつながらない場合、「下位レイヤー（物理層）から上位レイヤー（アプリケーション層）へ」順に確認するのが定石です。
+      </p>
+
+      <div class="scenario-box">
+        <h4>トラブルシューティング・フローチャート</h4>
+        <ol>
+          <li>
+            <strong>【物理層】ケーブル/Wi-Fi確認</strong>
+            <br>LANケーブルは刺さっているか？Wi-Fiアイコンはオンか？機内モードではないか？
+          </li>
+          <li>
+            <strong>【IP層】自分自身の確認 (ipconfig)</strong> <br>IPアドレスは割り当たっているか？
+            <code>169.254.x.x</code>（リンクローカルアドレス）になっていないか？ <br>→ 異常なら
+            <code>ipconfig /renew</code> やルーター再起動。
+          </li>
+          <li>
+            <strong>【IP層】ゲートウェイへの疎通 (ping)</strong> <br>デフォルトゲートウェイ（ルーター）へ
+            <code>ping</code> は通るか？ <br>→ 失敗する場合、PC～ルーター間の問題（Wi-Fi不調やハブの故障）。
+          </li>
+          <li>
+            <strong>【IP層】インターネットへの疎通 (ping)</strong> <br><code>ping 8.8.8.8</code>（GoogleのパブリックDNS）は通るか？ <br>→ 成功する場合、インターネット接続自体は正常。
+          </li>
+          <li>
+            <strong>【名前解決】DNSの確認 (nslookup)</strong> <br><code>nslookup google.com</code> は成功するか？
+            <br>→ IP指定(8.8.8.8)で通るのにドメイン名で失敗する場合、DNSサーバーの設定ミスや障害。
+          </li>
+          <li>
+            <strong>【アプリ層】ポート/アプリの確認 (telnet/netstat)</strong>
+            <br>ファイアウォールでブロックされていないか？プロキシ設定は正しいか？
+          </li>
+        </ol>
+      </div>
+
+      <div class="mastery-checkbox" onclick="toggleMastery('section5')">
+        <input type="checkbox" id="check-section5">
+        <label for="check-section5" style="cursor: pointer; user-select: none">✓ この章を習得しました</label>
+      </div>
+    </section>
+
+    <section id="section6">
+      <div class="chapter-header">
+        <h2 style="margin: 0; border: none">6. 演習問題と実践シナリオ</h2>
+        <div class="timer-display-small" id="timer-section6">⏱️ 7:00</div>
+      </div>
+
+      <div class="scenario-box">
+        <h3>シナリオ1: 初級 - 基本的な疎通確認</h3>
+        <p><strong>状況:</strong> 社内のファイルサーバー（IP: 192.168.10.50）にアクセスできません。</p>
+        <p><strong>課題:</strong> サーバーが稼働しているか、ネットワーク的に到達可能かを確認してください。</p>
+        <p><strong>解答例:</strong></p>
+        <pre><code>ping 192.168.10.50</code></pre>
+        <p>
+          <strong>解説:</strong>
+          まずはpingでICMPエコー応答があるか確認します。「要求がタイムアウトしました」となる場合、サーバーがダウンしているか、サーバー側のファイアウォールでICMPが拒否されている可能性があります。
+        </p>
+      </div>
+
+      <div class="scenario-box">
+        <h3>シナリオ2: 中級 - DNS問題の切り分け</h3>
+        <p>
+          <strong>状況:</strong>
+          ブラウザで「http://internal-portal」にアクセスできませんが、隣の席の人はアクセスできています。IPアドレス「10.5.5.10」を直接入力するとアクセスできます。
+        </p>
+        <p><strong>課題:</strong> 原因を特定し、解決策を提案してください。</p>
+        <p><strong>解答例:</strong></p>
+        <pre><code>nslookup internal-portal
+ipconfig /flushdns</code></pre>
+        <p>
+          <strong>解説:</strong> IP直打ちで繋がり、名前で繋がらないのはDNSの問題です。<code>nslookup</code>
+          でエラーが出るか確認し、<code>ipconfig /flushdns</code>
+          で古いDNSキャッシュを削除することで解決する場合があります。
+        </p>
+      </div>
+
+      <div class="scenario-box">
+        <h3>シナリオ3: 上級 - ポート疎通診断</h3>
+        <p>
+          <strong>状況:</strong>
+          新しく構築したWebサーバー（192.168.20.100）に対し、pingは通りますが、Webブラウザでページが表示されません。
+        </p>
+        <p><strong>課題:</strong> Webサービス（ポート80）が到達可能か確認してください。</p>
+        <p><strong>解答例:</strong></p>
+        <pre><code>telnet 192.168.20.100 80
+(または PowerShellで) Test-NetConnection 192.168.20.100 -Port 80</code></pre>
+        <p>
+          <strong>解説:</strong>
+          ping（ICMP）とWeb（TCP/80）は別物です。pingが通っても、Webサーバーアプリが落ちていたり、Windows
+          Firewallでポート80が閉じている可能性があります。telnet等でTCPポートレベルの接続確認が必要です。
+        </p>
+      </div>
+
+      <div class="mastery-checkbox" onclick="toggleMastery('section6')">
+        <input type="checkbox" id="check-section6">
+        <label for="check-section6" style="cursor: pointer; user-select: none">✓ この章を習得しました</label>
+      </div>
+    </section>
+
+    <!-- Progress Summary -->
+    <div class="progress-summary" id="progressSummary">
+      <h4 style="margin: 0 0 10px 0; font-size: 11pt">📊 学習進捗</h4>
+      <p style="margin: 5px 0; font-size: 10pt"><strong id="completedCount">0</strong> / 6 章完了</p>
+      <div class="progress-bar">
+        <div class="progress-bar-fill" id="progressBarFill" style="width: 0%"></div>
+      </div>
+      <p style="margin: 10px 0 0 0; font-size: 9pt; color: #666">完了率: <strong id="completionRate">0%</strong></p>
+    </div>
+
+    <script>
+      // Timer configuration for each section (in seconds)
+      const sectionTimers = {
+        section1: 600, // 10分
+        section2: 480, // 8分
+        section3: 600, // 10分
+        section4: 600, // 10分
+        section5: 300, // 5分
+        section6: 420, // 7分
+      };
+
+      let activeTimers = {};
+      let completedSections = new Set();
+
+      // Load saved progress from localStorage
+      function loadProgress() {
+        const saved = localStorage.getItem('networkCommandsProgress');
+        if (saved) {
+          completedSections = new Set(JSON.parse(saved));
+          completedSections.forEach((sectionId) => {
+            const checkbox = document.getElementById(`check-${sectionId}`);
+            if (checkbox) {
+              checkbox.checked = true;
+              checkbox.parentElement.classList.add('completed');
+            }
+          });
+          updateProgressBar();
+        }
+      }
+
+      // Save progress to localStorage
+      function saveProgress() {
+        localStorage.setItem('networkCommandsProgress', JSON.stringify([...completedSections]));
+      }
+
+      // Toggle mastery checkbox
+      function toggleMastery(sectionId) {
+        const checkbox = document.getElementById(`check-${sectionId}`);
+        checkbox.checked = !checkbox.checked;
+
+        if (checkbox.checked) {
+          completedSections.add(sectionId);
+          checkbox.parentElement.classList.add('completed');
+          stopTimer(sectionId);
+        } else {
+          completedSections.delete(sectionId);
+          checkbox.parentElement.classList.remove('completed');
+        }
+
+        saveProgress();
+        updateProgressBar();
+      }
+
+      // Update progress bar
+      function updateProgressBar() {
+        const total = Object.keys(sectionTimers).length;
+        const completed = completedSections.size;
+        const percentage = Math.round((completed / total) * 100);
+
+        document.getElementById('completedCount').textContent = completed;
+        document.getElementById('progressBarFill').style.width = percentage + '%';
+        document.getElementById('completionRate').textContent = percentage + '%';
+
+        // Enable/disable test button based on completion
+        const testButton = document.getElementById('testButton');
+        const testWarning = document.getElementById('testWarning');
+
+        if (completed === total) {
+          // All chapters completed - enable test
+          testButton.style.opacity = '1';
+          testButton.style.pointerEvents = 'auto';
+          testButton.style.cursor = 'pointer';
+          testWarning.style.display = 'none';
+        } else {
+          // Not all completed - disable test
+          testButton.style.opacity = '0.5';
+          testButton.style.pointerEvents = 'none';
+          testButton.style.cursor = 'not-allowed';
+          testWarning.style.display = 'block';
+        }
+      }
+
+      // Format time as MM:SS
+      function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+      }
+
+      // Start timer for a section
+      function startTimer(sectionId) {
+        if (activeTimers[sectionId] || completedSections.has(sectionId)) return;
+
+        let timeLeft = sectionTimers[sectionId];
+        const timerElement = document.getElementById(`timer-${sectionId}`);
+
+        activeTimers[sectionId] = setInterval(() => {
+          timeLeft--;
+          timerElement.textContent = `⏱️ ${formatTime(timeLeft)}`;
+
+          // Warning when less than 2 minutes
+          if (timeLeft <= 120 && timeLeft > 0) {
+            timerElement.classList.add('timer-warning');
+          }
+
+          // Time's up
+          if (timeLeft <= 0) {
+            stopTimer(sectionId);
+            timerElement.textContent = '⏱️ 時間切れ';
+            timerElement.classList.add('timer-warning');
+          }
+        }, 1000);
+      }
+
+      // Stop timer for a section
+      function stopTimer(sectionId) {
+        if (activeTimers[sectionId]) {
+          clearInterval(activeTimers[sectionId]);
+          delete activeTimers[sectionId];
+        }
+      }
+
+      // Setup intersection observer to start timers when sections come into view
+      function setupObservers() {
+        const options = {
+          root: null,
+          threshold: 0.3,
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const sectionId = entry.target.id;
+              if (sectionTimers[sectionId]) {
+                startTimer(sectionId);
+              }
+            }
+          });
+        }, options);
+
+        Object.keys(sectionTimers).forEach((sectionId) => {
+          const section = document.getElementById(sectionId);
+          if (section) {
+            observer.observe(section);
+          }
+        });
+      }
+
+      // Initialize on page load
+      window.addEventListener('DOMContentLoaded', () => {
+        loadProgress();
+        setupObservers();
+      });
+
+      // Clean up timers when leaving page
+      window.addEventListener('beforeunload', () => {
+        Object.keys(activeTimers).forEach(stopTimer);
+      });
+    </script>
+
+    <section id="section7">
+      <h2>7. 理解度確認テスト</h2>
+      <div class="note" style="background-color: #e8f4f8; border: 2px solid #0056b3">
+        <span class="note-title" style="font-size: 13pt; color: #0056b3">📝 習得度チェック</span>
+        <p>
+          学習内容の理解度を確認するため、30問のテストをご用意しました。<br>
+          <strong>制限時間:</strong> 10分<br>
+          <strong>評価基準:</strong><br>
+        </p>
+        <ul style="margin-left: 20px">
+          <li><strong>27問以上:</strong> 合格 🎉</li>
+          <li><strong>21～26問:</strong> 及第点 ✓</li>
+          <li><strong>20問以下:</strong> 落第 ✗（要復習）</li>
+        </ul>
+        <p style="text-align: center; margin-top: 20px">
+          <a href="https://www.genspark.ai/api/files/s/pfzWlltz" id="testButton" style="
+              display: inline-block;
+              background-color: #0056b3;
+              color: white;
+              padding: 12px 30px;
+              text-decoration: none;
+              border-radius: 5px;
+              font-weight: bold;
+              font-size: 12pt;
+              opacity: 0.5;
+              pointer-events: none;
+              cursor: not-allowed;
+            ">テストを開始する</a>
+        </p>
+        <p style="text-align: center; margin-top: 10px; font-size: 9pt; color: #e74c3c" id="testWarning">
+          ⚠️ すべての章を完了してからテストに進んでください
+        </p>
+      </div>
+
+      <h2>8. 参考資料とさらなる学習</h2>
+      <ul>
+        <li>
+          <strong>Microsoft Learn (公式ドキュメント):</strong>
+          <a href="https://learn.microsoft.com/ja-jp/windows-server/administration/windows-commands/windows-commands" target="_blank">Windows コマンドライン ドキュメント</a>
+        </li>
+        <li>
+          <strong>書籍:</strong> 『マスタリングTCP/IP 入門編』（オーム社） -
+          ネットワーク理論のバイブルとして一読を強く推奨します。
+        </li>
+        <li>
+          <strong>学習のコツ:</strong>
+          自宅のWi-Fiルーターの設定画面を見たり、実際に自分のPCでコマンドを叩いて、出力結果が何を意味するか一つ一つ確認することが最も近道です。
+        </li>
+      </ul>
+    </section>
+  
+
+</body></html>
